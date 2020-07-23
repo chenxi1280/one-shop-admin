@@ -1,0 +1,14 @@
+package com.onequery;
+
+import lombok.Data;
+
+/**
+ * creator：杜夫人
+ * date: 2020/6/5
+ */
+@Data
+public class ApprovalLogQuery extends PageQuery {
+
+    private Long merchantId;
+
+}

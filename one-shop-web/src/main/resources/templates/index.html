@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>闪购</title>
+<link rel="icon" th:href="@{/images/logo/logo.png}" type="image/x-icon"/><!--公司网址图标-->
+
+<div th:replace="fragment/js::js"></div>
+<div th:replace="fragment/map::map"></div>
+<style>
+    .headImg::after {
+        opacity: 0.1;
+        content: "";
+    }
+</style>
+<body>
+<div style="position: absolute;left: 0;right: 0;top: 0;bottom: 0;">
+    <div class="layui-row" style="height: 100%">
+        <div class="layui-col-xs12   layui-col-md6 layui-col-md-offset3" style="height: 100%;">
+            <!--             最上面的背景图片的-->
+            <div style="position: absolute;top: 0;left: 0;right: 0;height: 40px;z-index: 1">
+                <div class="headImg"
+                     th:style="'display: flex;height: 100%;justify-content: space-between;align-items: center;background-image:url('+${headerImg}+');color: white;background-size:cover; '">
+                    <div id="provinceDiv"
+                         style="flex-grow: 1;padding: 10px 15px;font-size: 1rem;font-weight: bold;font-family: '等线';cursor: pointer;">
+                        <div style="display: flex;align-items: center;white-space: nowrap">
+                            <i class="layui-icon layui-icon-location" style="font-size: 1rem"></i>
+                            <span style="margin-left: 10px;" id="cityArea">位置获取中</span><i
+                                class="layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                        </div>
+                    </div>
+                    <div style="flex-grow: 1;padding: 10px 25px 10px 0;display: flex;align-items: center;">
+                        <input class="layui-input" placeholder="搜索你想要的"
+                               style="background: white;height: 30px;border-radius: 10px;color: gray;border: 1px"/>
+                        <i class="layui-icon layui-icon-search" style="font-size: 1.2rem;margin-left: 10px"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="hideScrollBar" id="mainContent"
+                 style="position: absolute;top: 40px;left: 0;right: 0;bottom: 50px;overflow-y: auto">
+                <div>
+                    <div style="position: relative">
+                        <img style="width: 100%;-webkit-clip-path: inset(0%  round 0 0 100% 100% );"
+                             th:src="${headerImg}"/>
+                        <div style="position: absolute;left: 0;right: 0;top: 0;bottom: 0;">
+                            <div style="padding: 10px">
+                                <div style="display: flex;overflow-x: auto">
+                                    <button th:each="x:${hostWords}" th:text="${x}" class="layui-btn-xs layui-btn"
+                                            style="background: rgba(255,255,255,0.2);color: white;border-radius: 10px;padding: 0 10px">
+                                        关键词
+                                    </button>
+                                </div>
+                                <!--                                轮播图-->
+                                <div style="padding:  10px 0">
+                                    <div class="layui-carousel" id="advertisement" style="border-radius: 10px;">
+                                        <div carousel-item style="border-radius: 10px;">
+                                            <img th:each="x:${indexImgs}" style="width:100%;border-radius: 10px"
+                                                 th:src="${x}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="padding: 20px 0 0 0 ">
+                        <img th:src="${floorBanner}" style="width: 100%"/>
+                    </div>
+                    <div id="businessTypeDiv" style="padding: 15px 10px 5px 10px">
+                        <div style="display: flex;justify-content: space-between;flex-wrap: wrap;">
+                            <div style="width: 19%;cursor: pointer" th:each="b:${indexMenu}">
+                                <div style="text-align: center;padding:8px;">
+                                    <div><img style="width: 100%"
+                                              th:src="${b.img}">
+                                    </div>
+                                    <div style="padding: 6px 0 0 0;font-size: 12px" th:text="${b.text}"> 超市</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="vipImgsDiv" style="padding: 5px 0px;background: rgb(245,245,245)">
+                        <div style="background: white;border-radius: 10px;display: flex">
+                            <div th:each="i:${vipImgs}" style="flex: 1">
+                                <img th:src="${i}" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="newPersonDiv">
+                        <img th:src="${newPerson}"
+                             style="width: 100%"/>
+                    </div>
+                    <div id="nearbyMerchantsDiv" style="padding: 10px">
+                        <div>
+                            <div style="display: flex;justify-content: space-between;align-items: center">
+                                <div style="padding: 10px 5px;font-family: 'PingFangSC-Regular'; font-size: 16px; font-weight: bold; line-height: 20px;">
+                                    附近商家
+                                </div>
+                                <div style="display: flex;align-items: center;">
+                                    <div style="cursor: pointer;">查看更多</div>
+                                    <i class="layui-icon-right layui-icon"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div id="merchantsDiv"
+                                     style="display: flex;justify-content: space-between;overflow-x: auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 5px 10px 0 10px">
+                        <div>
+                            <div style="display: flex;justify-content: space-between;align-items: center;">
+                                <div style="padding: 10px 5px;font-family: 'PingFangSC-Regular'; font-size: 16px; font-weight: bold; line-height: 20px;">
+                                    附近好货
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="nearbyGoodsDiv" style="background: rgb(245,245,245)">
+                        <div style="padding: 5px">
+                            <div>
+                                <div style="display: flex;flex-wrap: wrap;justify-content: center"
+                                     id="goodsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div th:replace="fragment/bottom_menu::bottom_menu"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript" type="text/javascript">
+    let position;
+
+    function flowGoods(flow, layer) {
+        let goodsContainer = $("#goodsContainer");
+        let merchantsDiv = $("#merchantsDiv");
+
+        flow.load({
+            elem: '#goodsContainer' //指定列表容器
+            , scrollElem: '#mainContent'
+            , done: function (page, next) { //到达临界点（默认滚动触发），触发下一页
+                //以jQuery的Ajax请求为例，请求下一页数据（注意：page是从2开始返回）
+                let where = {};
+                where.page = page;
+                where.limit = 10;
+                getCookiePosition();
+                if (position != undefined) {
+                    let minLngLat = position.offset(-5000, -5000);// 最小经纬度
+                    let maxLngLat = position.offset(5000, 5000); // 最大经纬度
+                    where.minLng = minLngLat.getLng();
+                    where.minLat = minLngLat.getLat();
+                    where.maxLng = maxLngLat.getLng();
+                    where.maxLat = maxLngLat.getLat();
+                }
+                $.get('/pages/front/merchant/getNearbyMerchantsGoods', where, function (res) {
+                    //假设你的列表返回在data集合中
+                    let pages = Math.ceil(res.count / where.limit);
+                    if (res.count > 0) {
+                        if (page == 1) {// 取第一页的商家
+                            merchantsDiv.empty();// 清空操作
+                        }
+                        // 得到总页数
+                        res.data.forEach(i => {
+                            if (page == 1) {// 附近商户仅仅展示第一页
+                                let mItem = $("<div  style=\"margin-right: 10px;background: rgb(245,245,245);border-radius: 10px;border: solid lightgray 0.5px;width: 110px;text-align: center\">\n" +
+                                    "                                        <div style=\"border-radius: 10px\">\n" +
+                                    "                                            <img style=\"width: 110px;border-radius: 10px 10px 0 0\"\n" +
+                                    "                                                 src='" + i.doorImg + "'>\n" +
+                                    "                                            <div style=\"text-align: center;margin-top: -20px\">\n" +
+                                    "                                                <img style=\"width: 43px;height: 43px;border-radius: 100%\"\n" +
+                                    "                                                     src='" + i.shopLogo + "'>\n" +
+                                    "                                            </div>\n" +
+                                    "                                        </div>\n" +
+                                    "                                        <div style=\"overflow: hidden;max-width: 110px;white-space: nowrap; text-overflow:ellipsis;font-weight: bold; line-height: 20px;padding: 10px\">" + i.shopName + "</div>\n" +
+                                    "                                    </div>");
+                                merchantsDiv.append(mItem);
+                            }
+                            let item = $("<div id='merchant-" + i.merchantId + "'  style=\"width:46%;border-radius: 10px;background: white;margin: 5px\">\n" +
+                                "                                        <div  >\n" +
+                                "                                            <img style=\"width: 100%;border-radius: 10px 10px 0 0 \"  src='" + i.bestGoods.pic + "'>\n" +
+                                "                                        </div>\n" +
+                                "                                        <div   style=\"padding: 5px 10px\">\n" +
+                                "                                            <div>" + i.bestGoods.title + "</div>\n" +
+                                "                                            <div style=\"display: flex;align-items: flex-end;padding: 5px 0 0 0 \">\n" +
+                                "                                                <div style=\"font-size: 20px;color: red;font-weight: bold\">¥" + i.bestGoods.nowPrice + "</div>\n" +
+                                "                                                <div style=\"font-size: 12px;color: gray;margin-left: 10px;text-decoration: line-through\">¥" + i.bestGoods.oldPrice + "</div>\n" +
+                                "                                            </div>\n" +
+                                "\n" +
+                                "                                        </div>\n" +
+                                "                                        <div  style=\"display: flex;align-items: center;background: rgb(250,250,250);padding: 5px;border-radius: 0 0 10px 10px\">\n" +
+                                "                                            <div>\n" +
+                                "                                                <img style=\"width: 30px;height: 30px;border-radius: 100%\"\n" +
+                                "                                                     src='" + i.shopLogo + "'>\n" +
+                                "                                            </div>\n" +
+                                "                                            <div style=\"color: gray;font-size: 12px;margin-left: 10px\">" + i.shopName + "</div>\n" +
+                                "                                        </div>\n" +
+                                "                                    </div>");
+                            goodsContainer.prepend(item);
+                            imgAddPrefix();// 给图片上前缀。
+                        });
+                        $(".layui-flow-more").css({width: '46%', 'margin': '5px'});
+
+                        $("[id^=merchant-]").click(function () {
+                            // 去商户的店铺页面
+                            window.location = '/pages/front/merchant/merchantShop/' + this.id.split('-')[1];
+                        })
+
+                    }
+                    //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+                    //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+                    next('', page < pages);
+
+                });
+            }
+        })
+    }
+
+    function setPositionText(p) {
+        let cityArea = $("#cityArea");
+        cityArea.text(p.address);
+        cityArea.next().css({display: 'none'})
+    }
+
+    function getCookiePosition() {
+
+        if (position == undefined) {
+            let pStr = getCookie("userPosition");
+
+            if (pStr == null) {
+                layer.msg("定位失败，请手动选择位置");
+                getCityInfo(function (res) {
+                    let cityArea = $("#cityArea");
+                    cityArea.text(res.city);
+                    cityArea.next().css({display: 'none'})
+                });
+            } else {
+                let p = JSON.parse(pStr);
+                setPositionText(p);
+                position = new AMap.LngLat(p.lng, p.lat);
+            }
+        }
+    }
+
+    layui.use(['layer', 'form', 'carousel', 'flow'], function () {
+
+        let carousel = layui.carousel;
+        let flow = layui.flow;
+        let layer = layui.layer;
+        // layer.msg('当前服务器所在端口：' + [[${application.serverPort}]]);
+        initMap(function (res) {// 点击之后要做的事情
+            position = res.location;
+            let userPosition = {};
+            userPosition.address = res.name;
+            userPosition.lng = res.location.lng;
+            userPosition.lat = res.location.lat;
+            setPositionText(userPosition);
+            setCookie("userPosition", JSON.stringify(userPosition));
+            $("#goodsContainer").empty();
+
+            flowGoods(flow, layer);
+        });
+        $("#provinceDiv").click(function () {
+            toggleMap();
+        });
+        //建造实例
+        carousel.render({
+            elem: '#advertisement'
+            , width: '100%' //设置容器宽度
+            , arrow: 'hover' //始终显示箭头
+            , height: '130px'
+            //,anim: 'updown' //切换动画方式
+        });
+        getCookiePosition();
+        flowGoods(flow, layer);
+    })
+
+</script>
+
+</body>
+</html>

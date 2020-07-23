@@ -1,0 +1,33 @@
+package com.one.pojo.vo;import com.fasterxml.jackson.annotation.JsonInclude;
+import com.oneentity.Merchant;
+import com.oneentity.OrderItem;
+import com.oneentity.SgOrder;
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * creator：杜夫人
+ * date: 2020/6/11
+ */
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)// 把null忽略
+public class OrderVO extends SgOrder {
+
+    private List<OrderItem> orderItems;
+
+    private String orderItemsStr;// 订单详情的JSON字符串
+
+    private Merchant merchant;
+
+    private List<OrderItemVO> orderItemVOs;
+
+    public void setOrderItemVOs(List<OrderItemVO> orderItemVOs) {
+
+        this.orderItemVOs = orderItemVOs;
+    }
+
+    public List<OrderItemVO> getOrderItemVOs() {
+        return orderItemVOs;
+    }
+}

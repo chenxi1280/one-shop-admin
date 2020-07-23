@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<div th:replace="fragment/js::js"></div>
+<style>
+    /*修改layui表格的高度*/
+    .layui-table-cell {
+        height: auto;
+    }
+</style>
+<body class="layui-card-body layui-card">
+<form class="layui-form" style="padding:5px 0;display: flex;align-items: center;"
+      id="queryForm">
+    <div class="layui-form-item" style="margin: 0">
+        <label class="layui-form-label" style="width: fit-content;">名称</label>
+        <input type="text" name="name" id="permissionName"
+               style="width: 120px" class="layui-input">
+    </div>
+    <div class="layui-form-item" style="margin: 0">
+        <label class="layui-form-label" style="width: fit-content">备注</label>
+        <input type="text" name="note" id="permissionNote"
+               style="width: 120px" class="layui-input">
+    </div>
+    <div class="layui-form-item" style="margin: 0">
+        <button class="layui-btn" style="margin-left: 10px" id="queryBtn" lay-submit lay-filter="queryForm">查询</button>
+    </div>
+</form>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+        <button class="layui-btn layui-btn-danger  layui-btn-sm" lay-event="delete">删除</button>
+        <button class="layui-btn layui-btn-warm layui-btn-sm" lay-event="dispatchPermission">分配权限</button>
+    </div>
+</script>
+<!--分页组件-->
+<table id="permissionTable" lay-filter="permissionTable"></table>
+<script type="text/html" id="addForm">
+    <form class="layui-form" style="padding: 20px">
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" placeholder="请输入角色名称"
+                       style="width: 200px" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="sort" placeholder="请输入排序编号" lay-verify="number"
+                       style="width: 200px" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限图标</label>
+            <div class="layui-input-block">
+                <input type="text" name="icon" placeholder="请输入权限图标"
+                       style="width: 200px" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限标记</label>
+            <div class="layui-input-block">
+                <input type="text" name="flag" placeholder="请输入权限标记"
+                       style="width: 200px" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="note" placeholder="请输入权限备注"
+                       style="width: 200px" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限地址</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" name="url" placeholder="请输入权限地址">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否展示</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="show" value="1" lay-skin="switch">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="commit">确认添加</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="systemRolesTableDiv">
+    <div style="padding: 5px 20px 20px 20px">
+        <table id="systemRolesTable" lay-filter="systemRolesTable"></table>
+        <button class="layui-btn  layui-btn-sm" id="addPermissionToRole">将权限添加至角色</button>
+        <button class="layui-btn layui-btn-danger layui-btn-sm" id="removePermissionFromRole">将权限从角色移除</button>
+    </div>
+</script>
+<script th:inline="javascript" type="text/javascript">
+    function deletePermissions(checkPermissions, layer, tb) {
+// 只把id取出来
+        let arr = [];
+        checkPermissions.forEach(function (r) {
+            let permissionItem = {};
+            permissionItem.permissionId = r.permissionId;
+            arr.push(permissionItem);// 这样传递的参数大大减少，节省很多宽带，性能提高
+        });
+        // // js有  map\reduce\filter\findIndex\find// 拓展
+        // let arr2 = checkPermissions.map((item) => {
+        //     let permissionItem = {};
+        //     permissionItem.permissionId = item.permissionId;
+        //     return permissionItem;
+        // })
+        if (arr.length > 0) {
+            // 把数组传递到后台去,一定是ajax原生的，而且contentType一定是application/json,formData的时候 才是false
+            $.ajax({
+                url: "/pages/back/permission/deletePermissions",// 请求数据服务器地址，只能是当前项目，JSONP才能访问外网（需要服务器配合才能用）
+                contentType: "application/json",// 默认就是表单数据(不写)，如果此时要传递的是json字符串，
+                // 那么此时就用application/json,如果此时要传递图片"multipart/form-data，还有数组，集合，还有对象，那么contentType必须指定为false
+                data: JSON.stringify(arr),// 要上传 的字符串（json字符串）
+                dataType: 'json',// 服务器响应数据：json,text,html,xml
+                error: function () {//请求错误的时候，会触发此函数
+                },
+                processData: true,//布尔值,一般都不用设置，规定通过请求发送的数据是否转换为查询字符串。默认是 true。如果此时上传的时候，有图片，这里必须设置false,
+                success: function (res) {// 请求成功，回调函数,data，指的就是服务器返回的数据
+                    layer.msg(res.msg);
+                    tb.reload();
+                },
+                type: 'post',// ajax请求的方式，post或get
+            });
+        }
+    }
+
+    layui.use(['layer', 'table', 'form'], function () {
+        // 我再js代码里边如何获取控制器传递过来的参数呢？
+        let layer = layui.layer;// 弹出层
+        let table = layui.table;// 分页组件
+        let form = layui.form;// 分页组件
+        // layer.msg('弹出一个消息', {icon: 1});
+
+        //第一个实例
+        let tb = table.render({// 渲染表格
+            elem: '#permissionTable'
+            , url: '/pages/back/permission/ajaxList' //服务后台的数据接口
+            , page: true //开启分页
+            , cols: [[ //表头，这里是两个[[开头，两个]]结尾
+                {field: '', type: 'checkbox', title: '多选'}
+                , {field: 'name', title: '权限名称', width: 160, edit: 'text'}
+                , {field: 'sort', title: '序号', width: 80, edit: 'text', sort: true}
+                , {field: 'icon', title: '图标', width: 200, edit: 'text'}
+                , {field: 'flag', title: '标记', width: 160, edit: 'text'}
+                , {field: 'url', title: '路径', width: 260, edit: 'text'}
+                , {field: 'note', title: '备注', width: 260, edit: 'text'}
+                , {
+                    field: 'show', title: '是否展示', width: 160, templet: function (d) {// 这个d指的是本行的数据 js对象
+                        // console.log(d)
+                        let check = d.show ? 'checked' : '';
+                        return '<div > <input lay-filter="showBtn" id="pid-' + d.permissionId + '" type="checkbox" ' + check + ' value="1" name="show" lay-skin="switch"></div>'
+                    }
+                }
+                , {
+                    field: '', title: '操作', templet: function (d) {// 这个d指的是本行的数据 js对象
+                        // console.log(d)
+                        return '<div>\n' +
+                            '            <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="deleteData">删除</button>\n' +
+                            ' </div>'
+
+                    }
+                }
+            ]]
+            , toolbar: '#toolbarDemo'
+        });
+        let addOpen;
+        let showPermissionOpen;
+        form.on('submit(queryForm)', function (data) {
+            tb.reload({
+                where: data.field
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        form.on('submit(commit)', function (data) {
+            console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+            console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            // $.post('/pages/back/shopCar/editCount', data.field, function (res) {
+            //
+            // });
+            // 现在要讲的是如果表单中有 文件上传呢？而且还有基本数据
+            // formData就是传递表单js对象,处理最复杂的表单
+            // 如何自定义增加表单数据
+            let formData = new FormData(data.form);
+            // 添加一个文件呢？
+            // 添加文件的步骤：首先，第一步：获取file的jsDom对象
+
+            $.ajax({
+                url: "/pages/back/permission/add",// 请求数据服务器地址，只能是当前项目，JSONP才能访问外网（需要服务器配合才能用）
+                contentType: false,// 默认就是表单数据(不写)，如果此时要传递的是json字符串，
+                // 那么此时就用application/json,如果此时要传递图片"multipart/form-data，还有数组，集合，还有对象，那么contentType必须指定为false
+                data: formData,// 要上传的参数
+                dataType: 'json',// 服务器响应数据：json,text,html,xml
+                error: function () {//请求错误的时候，会触发此函数
+
+                },
+                processData: false,//布尔值,一般都不用设置，规定通过请求发送的数据是否转换为查询字符串。默认是 true。如果此时上传的时候，有图片，这里必须设置false,
+                success: function (res) {// 请求成功，回调函数,data，指的就是服务器返回的数据
+                    console.log(res);
+                    if (res.res) {
+                        layer.msg(res.msg);
+                        tb.reload();// 添加成功数据之后要重载表格
+                        if (addOpen != undefined) {
+                            layer.close(addOpen);
+                        }
+                    }
+                },
+                type: 'post',// ajax请求的方式，post或get
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        form.on('switch(showBtn)', function (data) {// 监听开关事件
+            let pid = data.elem.id.split('-')[1];// 拿到权限id
+            let p = {};
+            p.permissionId = pid;
+            p.show = data.elem.checked;// 获取权限是否展示
+            $.post('/pages/back/permission/editPermission', p, function (res) {
+                    layer.msg(res.msg);
+                }
+            );
+        });
+        //监听行中工具条
+        table.on('tool(permissionTable)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var d = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            switch (layEvent) {
+                case 'deleteData':
+                    // 有没有数组？
+                    let permissions = [];
+                    permissions.push(d);
+                    layer.confirm('您确定操作吗?', function (index) {
+                        // 第一步，拿到所有选中的行的权限id
+                        deletePermissions(permissions, layer, tb);// 批量删除权限
+                        layer.close(index);
+                    });
+                    break;
+            }
+        });
+        // 单元格编辑事件
+        table.on('edit(permissionTable)', function (obj) { //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
+            let p = {};
+            p.permissionId = obj.data.permissionId;
+            p[obj.field] = obj.value;
+            $.post('/pages/back/permission/editPermission', p, function (res) {
+                    layer.msg(res.msg);
+                }
+            );
+        });
+        // 头部工具栏监听事件监听事件
+        table.on('toolbar(permissionTable)', function (obj) {
+            console.log(obj);
+            // var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    addOpen = layer.open({// 弹框之后，如遇到select标签，radio,checkbox之类，需要使用表单渲染
+                        type: 1,
+                        title: "添加权限",
+                        content: $("#addForm").html()
+                    });
+                    form.render();
+                    break;
+                case 'delete':
+                    let checkStatus = table.checkStatus('permissionTable'); //idTest 即为基础参数 id 对应的值
+                    layer.confirm('您确定操作吗?', function (index) {
+                        // 第一步，拿到所有选中的行的权限id
+                        let checkPermissions = checkStatus.data;//获取选中行的数据
+                        deletePermissions(checkPermissions, layer, tb);// 批量删除权限
+                        layer.close(index);
+                    });
+                    break;
+                case 'dispatchPermission':
+                    layer.msg('分配权限');
+                    // 第一步：获取选中的权限
+                    let checkS = table.checkStatus('permissionTable'); //idTest 即为基础参数 id 对应的值
+                    let checkPermissions = checkS.data;//获取选中行的数据
+                    console.log(checkPermissions);
+
+                    //第一个实例
+                    let systemRolesOpen = layer.open({// 弹框之后，如遇到select标签，radio,checkbox之类，需要使用表单渲染
+                        type: 1,
+                        offset: '10px',
+                        area: '60%',
+                        title: "系统级角色列表",
+                        content: $("#systemRolesTableDiv").html()
+                    });
+                    let systemRolesTable = table.render({// 渲染表格
+                        elem: '#systemRolesTable'
+                        , url: '/pages/back/role/getSystemRoles' //服务后台的数据接口
+                        , cols: [[ //表头，这里是两个[[开头，两个]]结尾
+                            {field: '', type: 'radio', title: '单选'}
+                            , {field: 'name', title: '角色名称', width: 160}
+                            , {field: 'flag', title: '标记', width: 160}
+                            , {field: 'note', title: '备注', width: 260}
+                        ]]
+                    });
+                    // 第二步：拿到勾选的角色
+                    let r;
+                    table.on('radio(systemRolesTable)', function (obj) {
+                        let role = obj.data;
+                        r = {};
+                        r.roleId = role.roleId;
+                        let ps = [];// 权限数组
+                        checkPermissions.forEach((p) => {
+                            let permission = {};
+                            permission.permissionId = p.permissionId;
+                            ps.push(permission)
+                        });
+                        r.permissionVOS = ps;
+                    });
+                    $("#addPermissionToRole").click(function () {
+                        // 第一步：拿到所有勾选的权限
+                        if (checkPermissions.length === 0) {
+                            layer.msg('请选中一些权限，先');
+                            return;
+                        }
+                        if (r == undefined) {
+                            layer.msg('请选中一个角色，先');
+                            return;
+                        }
+                        $.post('/pages/back/permission/addPermissionToRole', {str: JSON.stringify(r)}, function (res) {// 如果要传递数组还是要用application/json
+                            layer.msg(res.msg);
+                        });
+                    });
+                    $("#removePermissionFromRole").click(function () {
+                        // 第一步：拿到所有勾选的权限
+                        if (checkPermissions.length === 0) {
+                            layer.msg('请选中一些权限，先');
+                            return;
+                        }
+                        if (r == undefined) {
+                            layer.msg('请选中一个角色，先');
+                            return;
+                        }
+                        $.post('/pages/back/permission/removePermissionFromRole', {str: JSON.stringify(r)}, function (res) {// 如果要传递数组还是要用application/json
+                            layer.msg(res.msg);
+                        });
+                    });
+                    break;
+            }
+        });
+
+
+        // tb.reload({
+        //     where: {title: "商品"}
+        // });// 表格重新加载
+
+
+        //
+        // let open = layer.open({// 就回返回一个index对象
+        //     type: 1
+        //     , title: "这个是一个信息框"
+        //     , content: $("#div").html()
+        //     , shadeClose: true // 这个是点击遮罩层是否关闭弹框
+        // })
+
+        // layer.confirm('您确定删除吗?', {icon: 3, title: '确定吗？'}, function (index) {
+        //     //do something
+        //     alert('执行ajax请求去删除数据');
+        //
+        //     layer.close(index);// 关闭某个弹框，传入弹框的下标
+        // });
+
+        // $("#permissionName").input(function () {// 注意：input事件比较特殊，不能够这么绑定
+        //     console.log(this.value)
+        // })
+        onInput($("#permissionName"));
+        onInput($("#permissionNote"));
+    });
+
+    function onInput(jObj) {
+        jObj.on({
+            'input': function () {
+                $("#queryBtn").click();// 这里直接换成查询按钮点击事件
+            }
+        })
+    }
+
+</script>
+
+<style>
+    .testCls {
+        color: red;
+    }
+</style>
+</body>
+
+</html>

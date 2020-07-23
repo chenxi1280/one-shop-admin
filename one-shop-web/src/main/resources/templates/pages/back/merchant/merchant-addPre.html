@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .loginType:hover {
+        color: orange;
+    }
+</style>
+<div th:replace="fragment/js::js"></div>
+<div th:replace="fragment/map::map"></div>
+
+<script type="text/javascript" th:src="@{/lh/cityPiker/cityPiker.js}"></script>
+<script type="text/javascript" th:src="@{/lh/upload/upload.js}"></script>
+<body style="margin: 0;background: rgb(245,245,245)">
+<div>
+    <div style="background: orange;height: 60px;display: flex;justify-content: center;padding-bottom: 10px">
+        <div class="sg-container" style="display: flex;justify-content: space-between;align-items: flex-end ">
+            <div>
+                <div style="font-size: 32px;font-weight: bold;color: white">商家入驻申请</div>
+            </div>
+            <div style="display: flex;color: white">
+                <div>闪购首页</div>
+                <div style="margin-left: 10px">下载闪购</div>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex;justify-content: center;">
+        <div class="sg-container" style="border: solid lightgray 1px;margin: 10px auto;background: white">
+            <div style="padding: 20px 30px">
+                <div>
+                    <div style="font-size: 20px;font-weight: bold">店铺信息</div>
+                    <form class="layui-form" style="padding: 20px 10px">
+                        <div style="display: flex;flex-wrap: wrap">
+                            <div>
+                                <input type="hidden" name="phone" th:value="${session.phone}"/>
+                                <div class="layui-form-item">
+                                    <div style="display: flex">
+                                        <span class="layui-form-label">主营品类</span>
+                                        <div class="layui-input-block" style="width: 100px;margin-left: 0">
+                                            <select id="patentType" lay-filter="patentType" lay-verify="required">
+                                                <option th:value="${pStat.index}" th:text="${p.name}"
+                                                        th:each="p:${types}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="layui-input-block" style="width: 100px;margin-left: 0">
+                                            <select name="businessType" id="childrenSelect" lay-verify="required">
+                                                <option th:value="${p.typeId}" th:text="${p.name}"
+                                                        th:each="p:${types[0].children}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">联系人姓名</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="contactName" placeholder="请输入联系人姓名"
+                                               lay-verify="required"
+                                               style="width: 200px" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">城市区域</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" cityPicker name="pcd"
+                                               style="width: 200px" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">地址信息</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="address"
+                                               style="width: 200px" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">店铺名称</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="shopName" lay-verify="required"
+                                               style="width: 200px" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">店铺坐标</label>
+                                    <div class="layui-input-block">
+                                        <input mapPicker type="text" name="address"
+                                               style="width: 200px" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">外卖电话</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="takeawayPhone" placeholder=""
+                                               style="width: 200px" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">邮箱</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="email" lay-verify="emailEnableNull" placeholder="非必填"
+                                               style="width: 200px" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-left: 20px">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">门脸照片</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="doorImg"></div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">室内照片</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="interiorImg"></div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">法人身份证头像面</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="cardUserImg"></div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">法人身份证国徽面</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="cardGuohuiImg"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div style="margin-left: 20px">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">法人手持身份证照</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="cardHandImg"></div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">营业执照</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="businessLicenseImg"></div>
+
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">安全许可证</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="securityPermitImg"></div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">其他凭证</label>
+                                    <div class="layui-input-block">
+                                        <div lh-upload id="otherVoucherImg"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center">
+                            <button class="layui-btn" style="background: orange" lay-submit lay-filter="addForm">立即申请
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript" type="text/javascript">
+    $(function () {
+        initMap();
+        // 这些图片都是必须要上传的
+        let validateArr = ['doorImg', 'interiorImg', 'cardUserImg', 'cardGuohuiImg', 'cardHandImg', 'businessLicenseImg', 'securityPermitImg'];
+        layui.use(['layer', 'form'], function () {
+            let layer = layui.layer;
+            let form = layui.form;
+            form.verify({// 自定义邮箱验证，可以为空值
+                emailEnableNull: function (value, item) { //value：表单的值、item：表单的DOM对象
+                    if (value != '') {
+                        console.log(value)
+                        if (!new RegExp(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/).test(value)) {
+                            return '邮箱格式不正确';
+                        }
+                    }
+                }
+            });
+
+            form.on('select(patentType)', function (data) {// 监听顶级的选择事件
+                // data.value 就是获取父集合中的点击的那个下标
+                let types = [[${types}]];// 在js中取thymeleaf传递过来的值
+                let children = types[data.value].children;// 取出孩子们
+
+                let childrenSelect = $("#childrenSelect");
+                childrenSelect.empty();// 清空孩子们
+                children.forEach(c => {
+                    let op = $("<option value='" + c.typeId + "'>" + c.name + "</option>");// 一定要变成jquery对象
+                    childrenSelect.append(op);
+                });
+
+                form.render();// 不要忘记渲染
+            });
+
+            form.on('submit(addForm)', function (data) {
+                console.log(data);
+                let flag = true;// 默认是通过
+                for (let x = 0; x < validateArr.length; x++) {
+                    let i = validateArr[x];
+                    if (data.field[i] == undefined || data.field[i] == '') {
+                        layer.msg($("#" + i).parent().prev().text() + "需要上传");
+                        flag = false;// 有一个没上传就不能通过
+                        break;
+                    }
+                }
+                if (!flag) {// 如果上传文件没用通过，那么久直接返回false,就不要继续后面的操作了
+                    return false;
+                }
+                // 验证通过，开始执行入驻申请，因为图片全部都已经转换成了地址的字符串，所以实际上这里已经不涉及图片上传了，那么可以使用简单的post请求即可
+                console.log(data.field);
+                $.post('/pages/back/merchant/add', data.field, function (res) {
+                    layer.msg(res);
+                    if (res.res) {// 这里如果申请成功了，那么应该跳转到提示商户审核中的页面去，静态界面
+                        window.location = '/pages/back/merchant/approvalStatus'
+                    }
+                });
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+            uploadFile();// 一定要
+        });
+    })
+</script>
+
+
+</body>
+</html>
