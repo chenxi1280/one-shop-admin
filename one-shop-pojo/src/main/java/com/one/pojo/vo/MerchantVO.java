@@ -1,4 +1,7 @@
-package com.one.pojo.vo;import com.oneentity.Merchant;
+package com.one.pojo.vo;
+
+
+import com.one.pojo.entity.Merchant;
 import lombok.Data;
 
 import java.util.List;
@@ -10,7 +13,7 @@ import java.util.List;
 @Data
 public class MerchantVO extends Merchant {
     private GoodsVO bestGoods;
-    private List<GoodsTypeVO> goodsTypeList;
+//    private List<GoodsTypeVO> goodsTypeList;
 
 
 }
