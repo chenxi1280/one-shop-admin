@@ -1,14 +1,12 @@
-package com.oneentity;
+package com.one.pojo.entity;
 
-import lombok.Data;
-
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * goods
- * @author
+ * @author 
  */
 @Data
 public class Goods implements Serializable {
@@ -136,6 +134,11 @@ public class Goods implements Serializable {
      * 是否是团购：优惠券和外卖单独结算，优惠券按照优惠券提成抽成
      */
     private Boolean isCoupon;
+
+    /**
+     * 对应卡片id
+     */
+    private String cardIds;
 
     private static final long serialVersionUID = 1L;
 }

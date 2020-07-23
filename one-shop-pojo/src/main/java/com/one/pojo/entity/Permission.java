@@ -1,12 +1,11 @@
-package com.oneentity;
+package com.one.pojo.entity;
 
+import java.util.Date;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * permission
- * @author
+ * @author 
  */
 @Data
 public class Permission implements Serializable {
@@ -49,6 +48,16 @@ public class Permission implements Serializable {
      * 访问的地址
      */
     private String url;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 最近更新时间
+     */
+    private Date updateTime;
 
     private static final long serialVersionUID = 1L;
 }

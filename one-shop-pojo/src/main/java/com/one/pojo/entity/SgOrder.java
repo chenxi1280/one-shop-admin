@@ -1,14 +1,12 @@
-package com.oneentity;
+package com.one.pojo.entity;
 
-import lombok.Data;
-
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * sg_order
- * @author
+ * @author 
  */
 @Data
 public class SgOrder implements Serializable {
@@ -63,7 +61,7 @@ public class SgOrder implements Serializable {
     private Date payTime;
 
     /**
-     * 付款方式：支付宝，微信，余额付款
+     * 付款方式：1支付宝，2微信，3余额付款
      */
     private String payType;
 

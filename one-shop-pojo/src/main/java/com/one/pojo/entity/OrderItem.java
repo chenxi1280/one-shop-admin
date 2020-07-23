@@ -1,15 +1,12 @@
-package com.oneentity;
+package com.one.pojo.entity;
 
-import lombok.Data;
-
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * order_item
- *
- * @author
+ * @author 
  */
 @Data
 public class OrderItem implements Serializable {
@@ -21,30 +18,30 @@ public class OrderItem implements Serializable {
     /**
      * 下单时候的商品图片地址
      */
-    private String goodsImg;// pic
+    private String goodsImg;
 
     /**
-     * 下单时候的商品数量()
+     * 下单时候的商品数量
      */
-    private String goodsCount; // count
+    private String goodsCount;
 
     /**
      * 原来的商品id
      */
-    private Long originGoodsId;// goodsId
+    private Long originGoodsId;
 
     /**
      * 下单时候的商品名称
      */
-    private String goodsTitle; // 商品的title
+    private String goodsTitle;
 
     /**
      * 下单时候的价格
      */
-    private BigDecimal goodsPrice;// 指的商品中的nowPrice
+    private BigDecimal goodsPrice;
 
     /**
-     * 商户id:冗余字段：是专门拿来给程序查询用的
+     * 商户id:冗余字段：是专门拿来给程序查询用的（方便分组）
      */
     private Long merchantId;
 
@@ -54,7 +51,7 @@ public class OrderItem implements Serializable {
     private Date createTime;
 
     /**
-     * 用户id
+     * 用户id(冗余字段)
      */
     private Long userId;
 

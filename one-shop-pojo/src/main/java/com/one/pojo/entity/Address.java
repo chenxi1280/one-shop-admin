@@ -1,12 +1,10 @@
-package com.oneentity;
+package com.one.pojo.entity;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
  * address
- * @author
+ * @author 
  */
 @Data
 public class Address implements Serializable {

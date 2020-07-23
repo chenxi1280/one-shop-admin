@@ -1,18 +1,13 @@
-package com.oneentity;
+package com.one.pojo.entity;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
  * role
- * @author
+ * @author 
  */
 @Data
 public class Role implements Serializable {
-    /**
-     * 角色id
-     */
     private Integer roleId;
 
     /**

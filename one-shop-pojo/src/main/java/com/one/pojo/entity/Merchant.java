@@ -1,14 +1,12 @@
-package com.oneentity;
+package com.one.pojo.entity;
 
-import lombok.Data;
-
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * merchant
- * @author
+ * @author 
  */
 @Data
 public class Merchant implements Serializable {
