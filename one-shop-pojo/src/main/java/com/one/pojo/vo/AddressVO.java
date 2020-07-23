@@ -1,4 +1,7 @@
-package com.one.pojo.vo;import com.oneentity.Address;
+package com.one.pojo.vo;
+
+import com.one.pojo.entity.Address;
+
 import lombok.Data;
 
 /**
