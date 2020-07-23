@@ -2,6 +2,8 @@ package com.one.pojo.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * address
  * @author 
